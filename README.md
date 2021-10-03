@@ -2,9 +2,9 @@
 
 This is an Obsidian plugin for auto-generating truth tables with pre-filled truth values.
 
-![Example 1](assets/example1.mp4)
+https://user-images.githubusercontent.com/38285861/135750457-b58c7fcc-6342-43c3-aa14-1151c6ad9cdf.mp4
 
-![Example 2](assets/example2.mp4)
+https://user-images.githubusercontent.com/38285861/135750458-7c12df08-acc5-4309-b8a9-68bcc0a15717.mp4
 
 ### Releasing new releases
 
