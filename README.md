@@ -2,9 +2,19 @@
 
 This is an Obsidian plugin for auto-generating truth tables with pre-filled truth values.
 
+### Features
+
+Create tables manually with chosen number of variables and columns.
+
 https://user-images.githubusercontent.com/38285861/135750457-b58c7fcc-6342-43c3-aa14-1151c6ad9cdf.mp4
 
+**(pre v1.0.2)** Quickly create any size truth table.
+
 https://user-images.githubusercontent.com/38285861/135750458-7c12df08-acc5-4309-b8a9-68bcc0a15717.mp4
+
+**(v1.0.3 or later)** Create truth tables from LaTeX formula.
+
+https://user-images.githubusercontent.com/38285861/135756625-8facb361-8cbd-4271-b265-c22feae04b02.mp4
 
 ### Releasing new releases
 
