@@ -1,8 +1,8 @@
-## Obsidian Truth Table Plugin
+# Obsidian Truth Table Plugin
 
 This is an Obsidian plugin for auto-generating truth tables with pre-filled truth values.
 
-### Features
+## Features
 
 Create tables manually with chosen number of variables and columns.
 
@@ -16,13 +16,28 @@ https://user-images.githubusercontent.com/38285861/135750458-7c12df08-acc5-4309-
 
 https://user-images.githubusercontent.com/38285861/135756625-8facb361-8cbd-4271-b265-c22feae04b02.mp4
 
+## Changelog
+
+Version 1.0.2:
+- Initial release.
+
+Version 1.0.3:
+- Add ability to generate table from LaTeX formula.
+
+Version 1.0.4:
+- Use a more generic syntax parsing to handle more LaTeX commands.
+- Allow no whitespace between command and brackets.
+
+## Repository Maintanace
+
+This section is related to maintanance of the plugin's repository.
+
 ### Releasing new releases
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments.
-- Publish the release.
+- Update your `manifest.json` with new version number.
+- Commit changes.
+- Create tag: `git tag 1.0.0`
+- Push commits and tag: `git push --atomic origin master 1.0.0`
 
 ### How to use
 
@@ -33,7 +48,3 @@ https://user-images.githubusercontent.com/38285861/135756625-8facb361-8cbd-4271-
 ### Manually installing the plugin
 
 - Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-### API Documentation
-
-See https://github.com/obsidianmd/obsidian-api

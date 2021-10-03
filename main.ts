@@ -18,26 +18,24 @@ const DEFAULT_SETTINGS: TruthTablePluginSettings = {
 const GRAMMAR = `
 	Formula ::= Operation
 
-	Term ::= Operation | Group | Symbol
-	Operation ::= Negation | TwoOp
-	Operand ::= Symbol | Group
+	Term ::= Operation | Group | Variable
+	Operand ::= Variable | Group
 
 	Group ::= "(" Term ")"
 	Symbol ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+	Variable ::= Symbol
 
-	Negation ::= BACKSLASH "neg" WHITESPACE Operand
-	TwoOp ::= Operand WHITESPACE BACKSLASH ("land" | "wedge" | "lor" | "vee" | "oplus" | "rightarrow" | "iff") WHITESPACE Operand
+	Operation ::= OneOp | TwoOp
+	OneOp ::= EscapedString WHITESPACE? Operand
+	TwoOp ::= Operand WHITESPACE? EscapedString WHITESPACE? Operand
+
+	String ::= Symbol String | Symbol
+	EscapedString ::= BACKSLASH String
 
 	BACKSLASH ::= #x5C
-	WHITESPACEOP ::= " "
+	WHITESPACEOP ::= (#x20 | #x9 | #xD | #xA)+
 	WHITESPACE ::= WHITESPACEOP WHITESPACE | WHITESPACEOP
 `;
-
-/*
-	And ::= Operand WHITESPACE BACKSLASH ("land" | "wedge") WHITESPACE Operand
-	Or ::= Operand WHITESPACE BACKSLASH ("lor" | "vee") WHITESPACE Operand
-	Xor ::= Operand WHITESPACE BACKSLASH "oplus" WHITESPACE Operand
-*/
 
 const parser = new Grammars.W3C.Parser(GRAMMAR);
 
@@ -274,7 +272,7 @@ function formulaToColumns(input: string): [ string[], string[] ] {
 		if (p === null) return;
 		if (p.type === 'Operation') {
 			fields.push(p.text);
-		} else if (p.type === 'Symbol') {
+		} else if (p.type === 'Variable') {
 			symbols.add(p.text);
 		}
 
