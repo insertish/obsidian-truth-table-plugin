@@ -118,6 +118,11 @@ deepmerge@^4.2.2:
   resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
   integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
 
+ebnf@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/ebnf/-/ebnf-1.9.0.tgz#9c2dd6052f3ed43a69c1f0b07b15bd03cefda764"
+  integrity sha512-LKK899+j758AgPq00ms+y90mo+2P86fMKUWD28sH0zLKUj7aL6iIH2wy4jejAMM9I2BawJ+2kp6C3mMXj+Ii5g==
+
 estree-walker@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-1.0.1.tgz#31bc5d612c96b704106b477e6dd5d8aa138cb700"

@@ -1,4 +1,5 @@
 import { App, ButtonComponent, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, TextComponent } from 'obsidian';
+import { Grammars } from 'ebnf';
 
 interface TruthTablePluginSettings {
 	fill: 'TF' | '10' | 'YN' | 'custom';
@@ -13,6 +14,32 @@ const DEFAULT_SETTINGS: TruthTablePluginSettings = {
 	chars: 'pqrstuvwxyzabcdefghijklmno',
 	index: 'disabled',
 }
+
+const GRAMMAR = `
+	Formula ::= Operation
+
+	Term ::= Operation | Group | Symbol
+	Operation ::= Negation | TwoOp
+	Operand ::= Symbol | Group
+
+	Group ::= "(" Term ")"
+	Symbol ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+
+	Negation ::= BACKSLASH "neg" WHITESPACE Operand
+	TwoOp ::= Operand WHITESPACE BACKSLASH ("land" | "wedge" | "lor" | "vee" | "oplus" | "rightarrow" | "iff") WHITESPACE Operand
+
+	BACKSLASH ::= #x5C
+	WHITESPACEOP ::= " "
+	WHITESPACE ::= WHITESPACEOP WHITESPACE | WHITESPACEOP
+`;
+
+/*
+	And ::= Operand WHITESPACE BACKSLASH ("land" | "wedge") WHITESPACE Operand
+	Or ::= Operand WHITESPACE BACKSLASH ("lor" | "vee") WHITESPACE Operand
+	Xor ::= Operand WHITESPACE BACKSLASH "oplus" WHITESPACE Operand
+*/
+
+const parser = new Grammars.W3C.Parser(GRAMMAR);
 
 export default class TruthTablePlugin extends Plugin {
 	settings: TruthTablePluginSettings;
@@ -37,6 +64,23 @@ export default class TruthTablePlugin extends Plugin {
 			}
 		});
 
+		this.addCommand({
+			id: 'create-table-formula',
+			name: 'Create Table From Formula',
+			checkCallback: (checking: boolean) => {
+				let leaf = this.app.workspace.activeLeaf;
+				if (leaf) {
+					if (!checking) {
+						new CreateFromFormulaModal(this.app, this).open();
+					}
+
+					return true;
+				}
+
+				return false;
+			}
+		});
+
 		this.addSettingTab(new TruthTableSettingsTab(this.app, this));
 	}
 
@@ -46,6 +90,51 @@ export default class TruthTablePlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	generateTableFromChars(chars: string[], columns?: string[]): [ string, string, string[] ] {
+		const [T, F] = this.settings.fill === 'custom' ? this.settings.custom : this.settings.fill;
+
+		let header = `|${chars.map(char => `$${char}$`).join('|')}|`;
+		let divider = `|${chars.map(() => `:-:`).join('|')}|`;
+		let content = new Array(2 ** chars.length)
+			.fill(0)
+			.map((_, y) =>
+				`|${
+					new Array(chars.length)
+						.fill(0)
+						.map((_, x) =>
+							Math.floor(y / (2 ** (chars.length - x - 1))) % 2
+								? ` ${T} ` : ` ${F} `
+						)
+						.join('|')
+				}|`
+			);
+
+		if (this.settings.index !== 'disabled') {
+			header = '|*' + (this.settings.index) + '*' + header;
+			divider = '|:-:' + divider;
+			content = content.map((v, i) => `|$${ this.settings.index === 'interpretation' ? `v_{${i}}` : i }$${v}`);
+		}
+
+		if (columns && columns.length > 0) {
+			header += columns.map(v => '$' + v + '$|').join('');
+			divider += columns.map(() => ':-:|').join('');
+			content = content.map(line => line + columns.map(() => '   |').join(''));
+		}
+
+		return [ header, divider, content ];
+	}
+
+	insertTable(chars: string[], columns?: string[]) {
+		const currentView = this.app.workspace.activeLeaf.view as MarkdownView;
+        const editor = currentView.editor;
+
+		let [ header, divider, content ] = this.generateTableFromChars(chars, columns);
+		editor.replaceSelection(
+			[header, divider, ...content]
+				.join('\n')
+		);
 	}
 }
 
@@ -150,42 +239,7 @@ class CreateModal extends Modal {
 	}
 
 	generate(chars: string[]) {
-		const [T, F] = this.plugin.settings.fill === 'custom' ? this.plugin.settings.custom : this.plugin.settings.fill;
-		const currentView = this.app.workspace.activeLeaf.view as MarkdownView;
-        const editor = currentView.editor;
-
-		let header = `|${chars.map(char => `$${char}$`).join('|')}|`;
-		let divider = `|${chars.map(() => `:-:`).join('|')}|`;
-		let content = new Array(2 ** chars.length)
-			.fill(0)
-			.map((_, y) =>
-				`|${
-					new Array(chars.length)
-						.fill(0)
-						.map((_, x) =>
-							Math.floor(y / (2 ** (chars.length - x - 1))) % 2
-								? ` ${T} ` : ` ${F} `
-						)
-						.join('|')
-				}|`
-			);
-
-		if (this.plugin.settings.index !== 'disabled') {
-			header = '|*' + (this.plugin.settings.index) + '*' + header;
-			divider = '|:-:' + divider;
-			content = content.map((v, i) => `|$${ this.plugin.settings.index === 'interpretation' ? `v_{${i}}` : i }$${v}`);
-		}
-
-		if (this.columns.length > 0) {
-			header += this.columns.map(v => '$' + v + '$|').join('');
-			divider += this.columns.map(() => ':-:|').join('');
-			content = content.map(line => line + this.columns.map(() => '   |').join(''));
-		}
-
-		editor.replaceSelection(
-			[header, divider, ...content]
-				.join('\n')
-		);
+		this.plugin.insertTable(chars, this.columns);
 	}
 
 	submit() {
@@ -201,6 +255,106 @@ class CreateModal extends Modal {
 		}
 
 		this.close();
+	}
+
+	onClose() {
+		let {contentEl} = this;
+		contentEl.empty();
+	}
+}
+
+function formulaToColumns(input: string): [ string[], string[] ] {
+	const output = parser.getAST(input);
+	if (output === null) throw "Could not parse string.";
+
+	const fields: string[] = [],
+		  symbols: Set<string> = new Set();
+
+	function recurse(p: any) {
+		if (p === null) return;
+		if (p.type === 'Operation') {
+			fields.push(p.text);
+		} else if (p.type === 'Symbol') {
+			symbols.add(p.text);
+		}
+
+		for (const child of p.children) {
+			recurse(child);
+		}
+	}
+
+	recurse(output);
+	return [
+		fields.reverse(),
+		[...symbols.values()]
+	];
+}
+
+class CreateFromFormulaModal extends Modal {
+	plugin: TruthTablePlugin;
+	value: string = '';
+	preview: HTMLDivElement;
+
+	constructor(app: App, plugin: TruthTablePlugin) {
+		super(app);
+		this.plugin = plugin;
+		this.submit = this.submit.bind(this);
+	}
+
+	onOpen() {
+		let {contentEl} = this;
+		contentEl.style.maxWidth = '480px';
+
+		const currentView = this.app.workspace.activeLeaf.view;
+		if (!(currentView instanceof MarkdownView)) {
+			new Notice('Must be a Markdown view.');
+			return this.close();
+		}
+
+		const input = new TextComponent(contentEl)
+			.setPlaceholder("Enter formula")
+			.setValue(this.value)
+			.onChange(v => {
+				this.value = v;
+				this.render();
+			})
+			.inputEl;
+
+		input.onkeydown = e => { e.key === 'Enter' && this.submit() };
+		input.style.width = '100%';
+		input.focus();
+
+		this.preview = contentEl.createDiv();
+
+		new ButtonComponent(contentEl)
+			.setButtonText('Create')
+			.onClick(this.submit);
+	}
+
+	submit() {
+		const [fields, symbols] = formulaToColumns(this.value);
+		this.plugin.insertTable(symbols, fields);
+		this.close();
+	}
+
+	render() {
+		this.preview.empty();
+		this.preview.style.color = '';
+
+		try {
+			let [ fields, symbols ] = formulaToColumns(this.value);
+			
+			this.preview.createEl('h3').setText(`Symbols: ${symbols.join(', ')}`);
+			this.preview.createEl('h3').setText('Columns');
+
+			const list = this.preview.createEl('ul');
+			for (const field of fields) {
+				list.createEl('li').setText(field);
+			}
+		} catch (err) {
+			this.preview.setText(err);
+			this.preview.style.color = 'red';
+		}
 	}
 
 	onClose() {

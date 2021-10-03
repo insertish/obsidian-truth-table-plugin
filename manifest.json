@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-truth-table-plugin",
 	"name": "Truth Tables",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"minAppVersion": "0.12.15",
 	"description": "This is a plugin for auto-generating truth tables.",
 	"author": "Paul Makles",
