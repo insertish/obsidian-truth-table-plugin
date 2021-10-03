@@ -8,7 +8,7 @@ Create tables manually with chosen number of variables and columns.
 
 https://user-images.githubusercontent.com/38285861/135750457-b58c7fcc-6342-43c3-aa14-1151c6ad9cdf.mp4
 
-**(pre v1.0.2)** Quickly create any size truth table.
+**(UI is pre-v1.0.2)** Quickly create any size truth table.
 
 https://user-images.githubusercontent.com/38285861/135750458-7c12df08-acc5-4309-b8a9-68bcc0a15717.mp4
 
