@@ -16,6 +16,50 @@ https://user-images.githubusercontent.com/38285861/135750458-7c12df08-acc5-4309-
 
 https://user-images.githubusercontent.com/38285861/135756625-8facb361-8cbd-4271-b265-c22feae04b02.mp4
 
+## How To Use
+
+Configure how the plugin should fill out your tables in settings.
+
+![Plugin Settings](https://user-images.githubusercontent.com/38285861/135760247-45a9b0c0-b19f-4faf-a148-b7c41b0ba3e9.png)
+
+Open your command palette and type in "Truth Tables":
+
+![Palette](https://user-images.githubusercontent.com/38285861/135760267-135d4921-24bb-44c7-8cc8-d5732ec3b903.png)
+
+Selecting the first option will allow you to manually create a truth table:
+
+![image](https://user-images.githubusercontent.com/38285861/135760331-2b0af9e9-8bf1-404f-92b7-003586a94737.png)
+
+Which will generate the following table:
+
+|$p$|$q$|$r$|$p \land q$|$r \lor p$|
+|:-:|:-:|:-:|:-:|:-:|
+| F | F | F |   |   |
+| F | F | T |   |   |
+| F | T | F |   |   |
+| F | T | T |   |   |
+| T | F | F |   |   |
+| T | F | T |   |   |
+| T | T | F |   |   |
+| T | T | T |   |   |
+
+You may generate a truth table from a LaTeX formula by selecting the second option:
+
+![image](https://user-images.githubusercontent.com/38285861/135760350-621143bc-227f-46c6-9f95-c65d9928d5da.png)
+
+Which will generate the following table:
+
+|$a$|$p$|$b$|$a \lor p$|$(a \lor p) \oplus b$|
+|:-:|:-:|:-:|:-:|:-:|
+| F | F | F |   |   |
+| F | F | T |   |   |
+| F | T | F |   |   |
+| F | T | T |   |   |
+| T | F | F |   |   |
+| T | F | T |   |   |
+| T | T | F |   |   |
+| T | T | T |   |   |
+
 ## Changelog
 
 Version 1.0.2:
